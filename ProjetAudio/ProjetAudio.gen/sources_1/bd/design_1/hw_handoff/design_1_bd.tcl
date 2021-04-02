@@ -162,21 +162,6 @@ proc create_root_design { parentCell } {
 
   set audio_i2c [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 audio_i2c ]
 
-  set m_axis_aud_0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:axis_rtl:1.0 m_axis_aud_0 ]
-
-  set s_axis_aud_0 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:axis_rtl:1.0 s_axis_aud_0 ]
-  set_property -dict [ list \
-   CONFIG.HAS_TKEEP {0} \
-   CONFIG.HAS_TLAST {0} \
-   CONFIG.HAS_TREADY {1} \
-   CONFIG.HAS_TSTRB {0} \
-   CONFIG.LAYERED_METADATA {undef} \
-   CONFIG.TDATA_NUM_BYTES {4} \
-   CONFIG.TDEST_WIDTH {0} \
-   CONFIG.TID_WIDTH {3} \
-   CONFIG.TUSER_WIDTH {0} \
-   ] $s_axis_aud_0
-
 
   # Create ports
   set au_bclk_r [ create_bd_port -dir O au_bclk_r ]
@@ -192,7 +177,7 @@ proc create_root_design { parentCell } {
   # Create instance: axi_iic_0, and set properties
   set axi_iic_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_iic:2.0 axi_iic_0 ]
   set_property -dict [ list \
-   CONFIG.IIC_BOARD_INTERFACE {audio_i2c} \
+   CONFIG.IIC_BOARD_INTERFACE {Custom} \
    CONFIG.USE_BOARD_FLOW {true} \
  ] $axi_iic_0
 
@@ -1041,14 +1026,13 @@ proc create_root_design { parentCell } {
 
   # Create interface connections
   connect_bd_intf_net -intf_net axi_iic_0_IIC [get_bd_intf_ports audio_i2c] [get_bd_intf_pins axi_iic_0/IIC]
-  connect_bd_intf_net -intf_net i2s_receiver_0_m_axis_aud [get_bd_intf_ports m_axis_aud_0] [get_bd_intf_pins i2s_receiver_0/m_axis_aud]
+  connect_bd_intf_net -intf_net i2s_receiver_0_m_axis_aud [get_bd_intf_pins i2s_receiver_0/m_axis_aud] [get_bd_intf_pins i2s_transmitter_1/s_axis_aud]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins processing_system7_0/M_AXI_GP0] [get_bd_intf_pins ps7_0_axi_periph/S00_AXI]
   connect_bd_intf_net -intf_net ps7_0_axi_periph_M00_AXI [get_bd_intf_pins i2s_receiver_0/s_axi_ctrl] [get_bd_intf_pins ps7_0_axi_periph/M00_AXI]
-  connect_bd_intf_net -intf_net ps7_0_axi_periph_M01_AXI [get_bd_intf_pins i2s_transmitter_1/s_axi_ctrl] [get_bd_intf_pins ps7_0_axi_periph/M01_AXI]
-  connect_bd_intf_net -intf_net ps7_0_axi_periph_M02_AXI [get_bd_intf_pins axi_iic_0/S_AXI] [get_bd_intf_pins ps7_0_axi_periph/M02_AXI]
-  connect_bd_intf_net -intf_net s_axis_aud_0_1 [get_bd_intf_ports s_axis_aud_0] [get_bd_intf_pins i2s_transmitter_1/s_axis_aud]
+  connect_bd_intf_net -intf_net ps7_0_axi_periph_M01_AXI [get_bd_intf_pins axi_iic_0/S_AXI] [get_bd_intf_pins ps7_0_axi_periph/M01_AXI]
+  connect_bd_intf_net -intf_net ps7_0_axi_periph_M02_AXI [get_bd_intf_pins i2s_transmitter_1/s_axi_ctrl] [get_bd_intf_pins ps7_0_axi_periph/M02_AXI]
 
   # Create port connections
   connect_bd_net -net au_bclk_r [get_bd_ports au_bclk_r] [get_bd_pins i2s_receiver_0/sclk_out] [get_bd_pins i2s_transmitter_1/sclk_in]

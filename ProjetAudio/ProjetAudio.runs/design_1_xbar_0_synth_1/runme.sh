@@ -24,7 +24,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='C:/Users/17046/Documents/FPGA - Projet/ProjetAudio/ProjetAudio.runs/design_1_xbar_0_synth_1'
+HD_PWD='C:/Users/17046/Documents/Projet - FPGA Git/FPGA_Audio_Effect/ProjetAudio/ProjetAudio.runs/design_1_xbar_0_synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log
